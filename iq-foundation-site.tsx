@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion } from "framer-motion-3d";
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, ScrollControls, useScroll as useThreeScroll, MeshDistortMaterial, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three'; // << REQUIRED FIX
