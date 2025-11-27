@@ -1,11 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from "framer-motion-3d";
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Stars, ScrollControls, useScroll as useThreeScroll, MeshDistortMaterial, OrbitControls } from '@react-three/drei';
-import * as THREE from 'three'; // << REQUIRED FIX
-
-// Simulating Next.js App Router structure with React component
-// In actual deployment, this would be split into proper Next.js pages
+import { motion } from "framer-motion";
 
 // ============= COMPONENTS =============
 
@@ -67,82 +61,11 @@ const NavBar = () => {
   );
 };
 
-// Interactive Cube Component
-const InteractiveCube = () => {
-  const meshRef = useRef<THREE.Mesh>(null!);  // << FIXED
-  const [hovered, setHovered] = useState(false);
-  const { pointer } = useThree();
-  const scrollData = useThreeScroll();
-
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      // Scroll-linked rotation
-      const scrollOffset = scrollData.offset;
-      meshRef.current.rotation.y = scrollOffset * Math.PI * 2;
-      meshRef.current.rotation.x = scrollOffset * Math.PI;
-      
-      // Cursor interaction
-      meshRef.current.rotation.y += pointer.x * 0.1 * delta;
-      meshRef.current.rotation.x += pointer.y * 0.1 * delta;
-      
-      // Idle rotation
-      meshRef.current.rotation.z += delta * 0.2;
-      
-      // Scroll-based position shift
-      meshRef.current.position.y = Math.sin(scrollOffset * Math.PI) * 0.5;
-      meshRef.current.position.x = Math.cos(scrollOffset * Math.PI * 2) * 0.3;
-    }
-  });
-
+// Background Component (CSS animated stars + gradient)
+const AnimatedBackground = () => {
   return (
-    <motion.mesh
-      ref={meshRef}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 1.5, ease: "easeOut" }}
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-      scale={hovered ? 1.2 : 1}
-    >
-      <boxGeometry args={[2, 2, 2]} />
-      <MeshDistortMaterial
-        color={hovered ? "#a78bfa" : "#8b5cf6"}
-        emissive={hovered ? "#f97316" : "#3b82f6"}
-        emissiveIntensity={hovered ? 0.8 : 0.3}
-        metalness={0.9}
-        roughness={0.2}
-        distort={0.3}
-        speed={2}
-      />
-    </motion.mesh>
-  );
-};
-
-// Three.js Scene Component
-const ThreeScene = () => {
-  return (
-    <div className="fixed inset-0 z-0">
-      <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
-        <ScrollControls pages={4} damping={0.2}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} color="#a78bfa" />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} color="#f97316" />
-          
-          <InteractiveCube />
-          
-          <Stars
-            radius={100}
-            depth={50}
-            count={5000}
-            factor={4}
-            saturation={0}
-            fade
-            speed={1}
-          />
-          
-          <OrbitControls enableZoom={false} enablePan={false} />
-        </ScrollControls>
-      </Canvas>
+    <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-purple-900/40 to-black overflow-hidden">
+      <div className="absolute inset-0 bg-[url('/stars.png')] opacity-30 animate-pulse"></div>
     </div>
   );
 };
@@ -208,11 +131,118 @@ const HomePage = () => {
           transition={{ delay: 1.2, duration: 1 }}
           className="text-center text-xl md:text-2xl text-white/70 mt-12 max-w-3xl mx-auto"
         >
-          Empowering communities through accessible engineering and innovative design
+          Empowering communities through accessible engineering and meaningful innovation.
         </motion.p>
       </div>
     </section>
   );
 };
 
-export default HomePage;
+// Team Page
+const TeamPage = () => {
+  return (
+    <section id="team" className="relative py-32 px-6">
+      <div className="max-w-6xl mx-auto space-y-12">
+        <motion.h2 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-5xl font-bold text-white text-center"
+        >
+          Meet Our Team
+        </motion.h2>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <GlassyCard delay={0.2}>
+            <h3 className="text-white text-2xl font-semibold">Nithilan</h3>
+            <p className="text-white/60 mt-2">Founder — Mechanical Engineering & CAD</p>
+          </GlassyCard>
+
+          <GlassyCard delay={0.3}>
+            <h3 className="text-white text-2xl font-semibold">Coming Soon</h3>
+            <p className="text-white/60 mt-2">Team Member</p>
+          </GlassyCard>
+
+          <GlassyCard delay={0.4}>
+            <h3 className="text-white text-2xl font-semibold">Coming Soon</h3>
+            <p className="text-white/60 mt-2">Team Member</p>
+          </GlassyCard>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Mission Page
+const MissionPage = () => {
+  return (
+    <section id="mission" className="relative py-32 px-6">
+      <div className="max-w-5xl mx-auto space-y-12">
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-5xl font-bold text-white text-center"
+        >
+          Our Mission
+        </motion.h2>
+
+        <GlassyCard delay={0.2}>
+          <p className="text-white/80 text-lg leading-relaxed">
+            IQ Foundation focuses on accessible engineering: creating CAD resources,
+            engineering tutorials, community STEM outreach, and youth-focused technical education.
+          </p>
+        </GlassyCard>
+      </div>
+    </section>
+  );
+};
+
+// Join Page
+const JoinPage = () => {
+  return (
+    <section id="join" className="relative py-32 px-6">
+      <div className="max-w-5xl mx-auto space-y-12 text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-5xl font-bold text-white"
+        >
+          Join Us
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-white/70 text-lg max-w-2xl mx-auto"
+        >
+          Want to be part of the movement? We're seeking young engineers,
+          designers, and innovators who share our vision.
+        </motion.p>
+
+        <a
+          href="mailto:iqfoundationteam@gmail.com"
+          className="inline-block mt-6 px-10 py-4 rounded-xl bg-purple-600 text-white font-semibold text-xl hover:bg-purple-500 transition shadow-lg"
+        >
+          Contact Us
+        </a>
+      </div>
+    </section>
+  );
+};
+
+// Main Wrapper
+export default function IQFoundationSite() {
+  return (
+    <>
+      <AnimatedBackground />
+      <NavBar />
+      <HomePage />
+      <TeamPage />
+      <MissionPage />
+      <JoinPage />
+    </>
+  );
+}
